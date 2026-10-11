@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  mongodb-dz-sovereign:
+    image: mongo:7.0
+    container_name: besma-mongodb-local
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: besmainfoenergy_dz
+    volumes:
+      - mongo_sovereign_data:/data/db
+
+  mqtt-broker-sonelgaz:
+    image: eclipse-mosquitto:2.0
+    container_name: besma-mqtt-broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+
+  besma-backend-fastapi:
+    build:
+      context: ..
+      dockerfile: infrastructure/Dockerfile.backend
+    container_name: besma-fastapi-core
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../.env.example
+    environment:
+      AUDIT_SIGNING_KEY_PATH: "./keys/audit_signing_key.pem"
+      AUDIT_PUBLIC_KEY_PATH: "./keys/audit_public_key.pem"
+      AUDIT_TSA_URL: "https://freetsa.org/tsr"
+      AUDIT_EXPORT_MAX_ROWS: "100000"
+      THRESHOLD_RELOAD_INTERVAL_SECONDS: "60"
+      THRESHOLD_DEFAULT_SEASON: "all"
+      THRESHOLD_ENABLE_SIMULATION: "true"
+    depends_on:
+      - mongodb-dz-sovereign
+      - mqtt-broker-sonelgaz
+
+  besma-supervision-web:
+    image: node:22-alpine
+    container_name: besma-supervision-ui
+    working_dir: /app
+    volumes:
+      - ..:/app
+    command: sh -c "npm install && npm run build && npm run start"
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../.env.example
+    environment:
+      AUDIT_SIGNING_KEY_PATH: "./keys/audit_signing_key.pem"
+      AUDIT_PUBLIC_KEY_PATH: "./keys/audit_public_key.pem"
+      AUDIT_TSA_URL: "https://freetsa.org/tsr"
+      AUDIT_EXPORT_MAX_ROWS: "100000"
+      THRESHOLD_RELOAD_INTERVAL_SECONDS: "60"
+      THRESHOLD_DEFAULT_SEASON: "all"
+      THRESHOLD_ENABLE_SIMULATION: "true"
+    depends_on:
+      - besma-backend-fastapi
+
+volumes:
+  mongo_sovereign_data:

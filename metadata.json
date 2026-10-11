@@ -1,0 +1,6 @@
+{
+  "name": "BesmaInfoEnergy — Supervision & Optimisation Réseau",
+  "description": "Agent IA autonome de supervision, prédiction de pannes, détection de pertes non techniques et régulation SCADA pour les réseaux nationaux d'électricité et de gaz (Conforme Loi 18-07).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

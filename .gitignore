@@ -1,0 +1,19 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# .gitignore
+firebase-service-account.json
+backend/firebase-service-account.json
+keys/
+./keys/
+*.pem
+*.json
+!package.json
+!tsconfig.json
+!metadata.json

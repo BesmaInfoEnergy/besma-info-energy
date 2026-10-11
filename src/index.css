@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #0F172A;
+    color: #F8FAFC;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 80ms ease-out, color 80ms ease-out;
+  }
+
+  /* Norme ISA-101 Mode Sombre Pur : Fond #121212 (jamais #000000), Texte #E0E0E0 */
+  html.dark body {
+    background-color: #121212;
+    color: #E0E0E0;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Surcharges globales en mode sombre pur ISA-101 (.dark) pour tous les panneaux existants */
+html.dark .bg-slate-950,
+html.dark .bg-slate-950\/90,
+html.dark .bg-slate-950\/80,
+html.dark .bg-slate-950\/70,
+html.dark .bg-slate-950\/60,
+html.dark .bg-slate-950\/50 {
+  background-color: #121212 !important;
+}
+
+html.dark .bg-slate-900,
+html.dark .bg-slate-900\/90 {
+  background-color: #1C1C1E !important;
+}
+
+html.dark .bg-slate-800 {
+  background-color: #262629 !important;
+}
+
+html.dark .border-slate-800,
+html.dark .border-slate-800\/80,
+html.dark .border-slate-800\/70,
+html.dark .border-slate-700 {
+  border-color: #333336 !important;
+}
+
+html.dark .text-white,
+html.dark .text-slate-100,
+html.dark .text-slate-200 {
+  color: #E0E0E0 !important;
+}
+
+html.dark .text-slate-300,
+html.dark .text-slate-400 {
+  color: #B8B8BE !important;
+}
+
+/* Couleurs haute visibilité ISA-101 pour les alertes en mode sombre */
+html.dark .isa-alert-emergency {
+  color: #FF3B30 !important;
+  border-color: #FF3B30 !important;
+}
+
+html.dark .isa-alert-critical {
+  color: #FF9500 !important;
+  border-color: #FF9500 !important;
+}
+
+html.dark .isa-alert-warning {
+  color: #FFCC00 !important;
+  border-color: #FFCC00 !important;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
