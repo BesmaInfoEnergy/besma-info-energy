@@ -1,0 +1,112 @@
+# ==============================================================================
+# BESMAINFOENERGY — ORCHESTRATION DOCKER DE PRODUCTION SOUVERAINE (SONELGAZ)
+# Conformité : Loi Algérienne n° 18-07 (Hébergement 100% Local / On-Premise)
+# ==============================================================================
+
+version: "3.9"
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. BASE DE DONNÉES SOUVERAINE MONGODB 7.0 (Chiffrement & Rétention 365j)
+  # ----------------------------------------------------------------------------
+  mongodb-dz-sovereign:
+    image: mongo:7.0
+    container_name: besma-mongodb-prod
+    restart: always
+    command: ["mongod", "--auth", "--bind_ip_all"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-besma_admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-ChangeMe_StrongPassword_2026!}
+      MONGO_INITDB_DATABASE: ${MONGODB_DB_NAME:-besmainfoenergy_dz}
+    volumes:
+      - mongo_sovereign_data:/data/db
+      - ./backups/mongodb:/backups
+    networks:
+      - besma-scada-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------------------------
+  # 2. COURTIER MQTT INDUSTRIEL (RÉCEPTION DES AUTOMATES RTU / CAPTEURS SCADA)
+  # ----------------------------------------------------------------------------
+  mqtt-broker-sonelgaz:
+    image: eclipse-mosquitto:2.0
+    container_name: besma-mqtt-prod
+    restart: always
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+    volumes:
+      - mqtt_data:/mosquitto/data
+      - mqtt_log:/mosquitto/log
+    networks:
+      - besma-scada-net
+
+  # ----------------------------------------------------------------------------
+  # 3. COEUR BACKEND FASTAPI (IA PRÉDICTIVE 48H, Z-SCORE, AUDIT RSA-4096, SMS)
+  # ----------------------------------------------------------------------------
+  besma-backend-fastapi:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile.backend
+    container_name: besma-fastapi-prod
+    restart: always
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATA_SOVEREIGNTY_MODE: "LOCAL_DZ_STRICT"
+      ANONYMIZE_CONSUMER_PII: "true"
+      AUDIT_LOG_RETENTION_DAYS: "365"
+      AUDIT_SIGNING_KEY_PATH: "/app/keys/audit_signing_key.pem"
+      AUDIT_PUBLIC_KEY_PATH: "/app/keys/audit_public_key.pem"
+      MQTT_BROKER_HOST: "mqtt-broker-sonelgaz"
+      MQTT_BROKER_PORT: "1883"
+    volumes:
+      - ./keys:/app/keys:ro
+      - ./models:/app/models
+    depends_on:
+      mongodb-dz-sovereign:
+        condition: service_healthy
+      mqtt-broker-sonelgaz:
+        condition: service_started
+    networks:
+      - besma-scada-net
+
+  # ----------------------------------------------------------------------------
+  # 4. INTERFACE DE SUPERVISION WEB ISA-101 & PASSERELLE EXPRESS
+  # ----------------------------------------------------------------------------
+  besma-supervision-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: besma-supervision-prod
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: "production"
+      PORT: "3000"
+      AUDIT_SIGNING_KEY_PATH: "/app/keys/audit_signing_key.pem"
+      AUDIT_PUBLIC_KEY_PATH: "/app/keys/audit_public_key.pem"
+    volumes:
+      - ./keys:/app/keys:ro
+    depends_on:
+      - besma-backend-fastapi
+    networks:
+      - besma-scada-net
+
+volumes:
+  mongo_sovereign_data:
+  mqtt_data:
+  mqtt_log:
+
+networks:
+  besma-scada-net:
+    driver: bridge

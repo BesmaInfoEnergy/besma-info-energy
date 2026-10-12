@@ -171,12 +171,12 @@ export default function App() {
   // Authentification JWT / Changement de rôle RBAC
   const switchUserRole = useCallback(
     async (role: Role) => {
-      if (
-        role !== 'admin' &&
-        (activeSection === 'audit_conformite' || activeSection === 'config_seuils')
-      ) {
-        setActiveSection('supervision');
+      if (role !== 'admin') {
+        setActiveSection((prev) =>
+          prev === 'audit_conformite' || prev === 'config_seuils' ? 'supervision' : prev
+        );
       }
+      const fallbackToken = `jwt-${role}-session-dz1807`;
       const data = await safeJsonFetch<{ access_token: string; user: UserAccount }>(
         '/api/auth/switch-role',
         {
@@ -191,11 +191,12 @@ export default function App() {
         await registerTokenWithBackend(data.access_token, data.user.username, false);
       } else {
         const fallbackUser = USERS_FALLBACK[role];
+        setToken(fallbackToken);
         setCurrentUser(fallbackUser);
-        await registerTokenWithBackend(token, fallbackUser.username, false);
+        await registerTokenWithBackend(fallbackToken, fallbackUser.username, false);
       }
     },
-    [activeSection, registerTokenWithBackend, token]
+    [registerTokenWithBackend]
   );
 
   const fetchGridOverview = useCallback(async () => {
@@ -277,6 +278,7 @@ export default function App() {
     []
   );
 
+  // Initialisation unique au montage (ne réinitialise jamais le rôle lors d'un clic sur Opérateur / Lecteur)
   useEffect(() => {
     registerFcmServiceWorker();
     switchUserRole('admin');
@@ -285,7 +287,8 @@ export default function App() {
     fetchSourceFiles();
     const interval = setInterval(fetchGridOverview, 5000);
     return () => clearInterval(interval);
-  }, [switchUserRole, fetchGridOverview, fetchNotificationsState, fetchSourceFiles]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     fetchAnalyticsForZone(analyticsZone, token);
