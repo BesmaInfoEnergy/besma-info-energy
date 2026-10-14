@@ -240,18 +240,25 @@ export const ConsumptionTrends: React.FC<ConsumptionTrendsProps> = ({
 
         <div className="flex flex-wrap items-center gap-2">
           {onSelectZoneChange && (
-            <select
-              value={zone}
-              onChange={(e) => onSelectZoneChange(e.target.value)}
-              className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 font-medium"
-              aria-label="Sélectionner la zone pour les courbes 24h"
-            >
-              {availableZones.map((z) => (
-                <option key={z} value={z}>
-                  Zone : {z}
-                </option>
-              ))}
-            </select>
+            <div className="inline-flex">
+              <label htmlFor="trends-zone-select" className="sr-only">
+                Sélectionner la zone pour les courbes 24h
+              </label>
+              <select
+                id="trends-zone-select"
+                name="trends_zone"
+                value={zone}
+                onChange={(e) => onSelectZoneChange(e.target.value)}
+                className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 py-1.5 font-medium"
+                aria-label="Sélectionner la zone pour les courbes 24h"
+              >
+                {availableZones.map((z) => (
+                  <option key={z} value={z}>
+                    Zone : {z}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
 
           <button
@@ -301,8 +308,13 @@ export const ConsumptionTrends: React.FC<ConsumptionTrendsProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-slate-400">Corrélation (Axe Droit) :</span>
+          <label htmlFor="trends-secondary-metric-select" className="text-slate-400">
+            Corrélation (Axe Droit) :
+          </label>
           <select
+            id="trends-secondary-metric-select"
+            name="trends_secondary_metric"
+            aria-label="Métrique de corrélation axe droit"
             value={secondaryMetric}
             onChange={(e) =>
               setSecondaryMetric(e.target.value as TrendMetricOption | 'NONE')

@@ -17,14 +17,24 @@ export const USERS_FALLBACK: Record<Role, UserAccount> = {
     role: 'admin',
     wilayaScope: 'National (58 Wilayas)',
     department: 'Direction Centrale SCADA & IA - Alger',
+    badgeNumber: 'DZ-AGT-1601',
+    electricalClearance: 'H2V / Chargé d’Exploitation National',
+    status: 'ACTIVE',
+    phoneEncrypted: '+213 550 •• •• 12',
+    lastLoginAt: '2026-10-13T08:45:00Z',
   },
   operateur: {
     id: 'USR-DZ-002',
     username: 'operateur',
     fullName: 'Karim Mansouri (Ingénieur Dispatching)',
     role: 'operateur',
-    wilayaScope: 'Région Centre & Est',
+    wilayaScope: 'Région Centre & Est (Alger, Constantine, Sétif)',
     department: 'Centre National de Conduite (CNC)',
+    badgeNumber: 'DZ-AGT-1608',
+    electricalClearance: 'HTB-400kV / Chargé de Conduite CNC',
+    status: 'ON_DUTY',
+    phoneEncrypted: '+213 661 •• •• 45',
+    lastLoginAt: '2026-10-13T09:12:00Z',
   },
   lecteur: {
     id: 'USR-DZ-003',
@@ -32,9 +42,46 @@ export const USERS_FALLBACK: Record<Role, UserAccount> = {
     fullName: 'Amina Khelifi (Auditrice Conformité Loi 18-07)',
     role: 'lecteur',
     wilayaScope: 'Lecture Seule - Audit National',
-    department: 'Inspection Générale & Régulation',
+    department: 'Inspection Générale & Régulation (Loi 18-07)',
+    badgeNumber: 'DZ-AGT-1622',
+    electricalClearance: 'Auditeur de Sécurité des Réseaux',
+    status: 'ACTIVE',
+    phoneEncrypted: '+213 770 •• •• 89',
+    lastLoginAt: '2026-10-13T07:30:00Z',
   },
 };
+
+export const INITIAL_USER_ACCOUNTS: UserAccount[] = [
+  USERS_FALLBACK.admin,
+  USERS_FALLBACK.operateur,
+  USERS_FALLBACK.lecteur,
+  {
+    id: 'USR-DZ-004',
+    username: 'dispatch_ouest',
+    fullName: 'Tarek Boukhalfa (Ingénieur Dispatching Ouest)',
+    role: 'operateur',
+    wilayaScope: 'Région Ouest (Oran, Arzew, Tlemcen)',
+    department: 'Centre Régional de Conduite Ouest (CRC Oran)',
+    badgeNumber: 'DZ-AGT-3104',
+    electricalClearance: 'HTB-220kV / Dispatcher Régional',
+    status: 'ACTIVE',
+    phoneEncrypted: '+213 552 •• •• 78',
+    lastLoginAt: '2026-10-13T06:55:00Z',
+  },
+  {
+    id: 'USR-DZ-005',
+    username: 'gaz_sud',
+    fullName: 'Yacine Meziane (Superviseur Compression Gazoduc)',
+    role: 'operateur',
+    wilayaScope: 'Pôle Sud Gazier (Hassi R’Mel, Ouargla)',
+    department: 'Direction Transport Gaz (GRTG Laghouat)',
+    badgeNumber: 'DZ-AGT-0309',
+    electricalClearance: 'Gazoduc HP-80bar / Compression SCADA',
+    status: 'ON_DUTY',
+    phoneEncrypted: '+213 662 •• •• 90',
+    lastLoginAt: '2026-10-13T08:15:00Z',
+  },
+];
 
 export const INITIAL_GRID_NODES: GridNode[] = [
   {
@@ -722,7 +769,10 @@ export function buildAnalyticsTrendsAndAnomalies(zone: string = 'Alger') {
     let gas_pressure = Number((cfg.gas_pressure - dailyMod * 1.8).toFixed(2));
     if (isSpike1) gas_pressure = Number((gas_pressure - 8.5).toFixed(2));
 
-    const evalSev = (val: number, t: typeof thresholds.voltage) => {
+    const evalSev = (
+      val: number,
+      t: { warning_threshold: number; critical_threshold: number; emergency_threshold: number; direction: 'above' | 'below' | string }
+    ) => {
       if (t.direction === 'above') {
         if (val >= t.emergency_threshold) return 'emergency';
         if (val >= t.critical_threshold) return 'critical';
@@ -1095,7 +1145,7 @@ export function buildDefaultSmsHistory() {
 export function buildDefaultSmsStatus() {
   const history = buildDefaultSmsHistory();
   return {
-    active_provider: 'mock' as const,
+    active_provider: 'mock' as 'mock' | 'ooredoo' | 'mobilis' | 'djezzy',
     configured_provider_env: 'mock',
     remaining_credit_dzd: 48500.0,
     cost_per_sms_dzd: 4.0,

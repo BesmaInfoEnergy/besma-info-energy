@@ -157,11 +157,13 @@ export const EscalationPolicyPanel: React.FC<EscalationPolicyPanelProps> = ({
       <form onSubmit={handleSave} className="space-y-5 text-xs">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-slate-950 border border-slate-800 rounded-lg p-3.5 space-y-1.5">
-            <label className="text-slate-300 font-medium flex items-center gap-1.5">
+            <label htmlFor="esc-sms-timeout-input" className="text-slate-300 font-medium flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-amber-400" />
               Délai avant Escalade SMS (sec)
             </label>
             <input
+              id="esc-sms-timeout-input"
+              name="sms_timeout_seconds"
               type="number"
               min={5}
               max={600}
@@ -181,11 +183,13 @@ export const EscalationPolicyPanel: React.FC<EscalationPolicyPanelProps> = ({
           </div>
 
           <div className="bg-slate-950 border border-slate-800 rounded-lg p-3.5 space-y-1.5">
-            <label className="text-slate-300 font-medium flex items-center gap-1.5">
+            <label htmlFor="esc-voice-timeout-input" className="text-slate-300 font-medium flex items-center gap-1.5">
               <PhoneCall className="w-3.5 h-3.5 text-red-400" />
               Délai avant Appel Vocal (sec)
             </label>
             <input
+              id="esc-voice-timeout-input"
+              name="voice_call_timeout_seconds"
               type="number"
               min={60}
               max={1800}
@@ -205,11 +209,13 @@ export const EscalationPolicyPanel: React.FC<EscalationPolicyPanelProps> = ({
           </div>
 
           <div className="bg-slate-950 border border-slate-800 rounded-lg p-3.5 space-y-1.5">
-            <label className="text-slate-300 font-medium flex items-center gap-1.5">
+            <label htmlFor="esc-daily-limit-input" className="text-slate-300 font-medium flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5 text-sky-400" />
               Quota Quotidien (SMS_DAILY_LIMIT)
             </label>
             <input
+              id="esc-daily-limit-input"
+              name="daily_sms_limit"
               type="number"
               min={10}
               max={10000}
@@ -229,11 +235,13 @@ export const EscalationPolicyPanel: React.FC<EscalationPolicyPanelProps> = ({
           </div>
 
           <div className="bg-slate-950 border border-slate-800 rounded-lg p-3.5 space-y-1.5">
-            <label className="text-slate-300 font-medium flex items-center gap-1.5">
+            <label htmlFor="esc-retry-attempts-input" className="text-slate-300 font-medium flex items-center gap-1.5">
               <Bell className="w-3.5 h-3.5 text-emerald-400" />
               Tentatives (SMS_RETRY_ATTEMPTS)
             </label>
             <input
+              id="esc-retry-attempts-input"
+              name="retry_attempts"
               type="number"
               min={1}
               max={5}

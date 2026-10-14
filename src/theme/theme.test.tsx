@@ -474,7 +474,7 @@ describe('BesmaInfoEnergy — Suite de tests unitaires du Thème ISA-101 & WCAG 
       );
 
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      (expect(results) as any).toHaveNoViolations();
     });
 
     it('test_theme_toggle_has_no_axe_violations_in_dark_mode', async () => {
@@ -492,7 +492,7 @@ describe('BesmaInfoEnergy — Suite de tests unitaires du Thème ISA-101 & WCAG 
 
       expect(document.documentElement.classList.contains('dark')).toBe(true);
       const results = await axe(container);
-      expect(results).toHaveNoViolations();
+      (expect(results) as any).toHaveNoViolations();
     });
   });
 });

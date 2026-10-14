@@ -12,6 +12,7 @@ import {
 import {
   USERS_FALLBACK,
   createFallbackOverview,
+  INITIAL_USER_ACCOUNTS,
   FALLBACK_SOURCE_FILES,
   buildPacketsFromNodes,
   buildAnalyticsTrendsAndAnomalies,
@@ -33,8 +34,23 @@ import { AnomalyTimeline } from './components/AnomalyTimeline';
 import { FailureForecastPanel } from './components/FailureForecastPanel';
 import { SMSGatewayPanel } from './components/SMSGatewayPanel';
 import { EscalationPolicyPanel } from './components/EscalationPolicyPanel';
+import { UserManagementPanel } from './components/UserManagementPanel';
 import { ThemeToggle } from './components/ThemeToggle';
-import { ShieldCheck, Lock, Bell, CheckCircle2, RefreshCw } from 'lucide-react';
+import {
+  ShieldCheck,
+  Lock,
+  Bell,
+  CheckCircle2,
+  RefreshCw,
+  Users,
+  Activity,
+  Radio,
+  Cpu,
+  ShieldAlert,
+  Sliders,
+  FileCheck2,
+  Code,
+} from 'lucide-react';
 
 type ActiveSection =
   | 'supervision'
@@ -43,6 +59,7 @@ type ActiveSection =
   | 'fraude'
   | 'config_seuils'
   | 'audit_conformite'
+  | 'utilisateurs'
   | 'code_source';
 
 async function safeJsonFetch<T>(url: string, options?: RequestInit): Promise<T | null> {
@@ -67,6 +84,7 @@ export default function App() {
   const [selectedNodeId, setSelectedNodeId] = useState<string>('DZ-ELEC-ORN-02');
   const [token, setToken] = useState<string>('jwt-local-session-dz1807');
   const [currentUser, setCurrentUser] = useState<UserAccount>(USERS_FALLBACK.admin);
+  const [usersList, setUsersList] = useState<UserAccount[]>(INITIAL_USER_ACCOUNTS);
   const [aiAnalysis, setAiAnalysis] = useState<GeminiAnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [isExecutingScada, setIsExecutingScada] = useState<boolean>(false);
@@ -240,6 +258,84 @@ export default function App() {
     }
   }, []);
 
+  const fetchUsersList = useCallback(async (authToken: string) => {
+    const data = await safeJsonFetch<{ users: UserAccount[] }>('/api/v1/users', {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    if (data?.users && Array.isArray(data.users) && data.users.length > 0) {
+      setUsersList(data.users);
+    }
+  }, []);
+
+  const handleCreateUser = async (newUserData: Partial<UserAccount> & { password?: string }) => {
+    try {
+      const res = await fetch('/api/v1/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newUserData),
+      });
+      const json = await res.json();
+      if (res.ok && json.user) {
+        setUsersList((prev) => [...prev, json.user]);
+        showNotification(
+          `Agent [${json.user.fullName}] habilité avec succès (Matricule ${json.user.badgeNumber}).`
+        );
+      } else {
+        showNotification(`Erreur création agent : ${json.error || 'Erreur inconnue'}`);
+      }
+    } catch {
+      showNotification('Impossible de créer le compte agent.');
+    }
+  };
+
+  const handleUpdateUser = async (username: string, updates: Partial<UserAccount>) => {
+    try {
+      const res = await fetch(`/api/v1/users/${username}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updates),
+      });
+      const json = await res.json();
+      if (res.ok && json.user) {
+        setUsersList((prev) => prev.map((u) => (u.username === username ? json.user : u)));
+        if (currentUser.username === username) {
+          setCurrentUser(json.user);
+        }
+        showNotification(`Profil agent [${json.user.fullName}] mis à jour avec succès.`);
+      } else {
+        showNotification(`Erreur modification agent : ${json.error || 'Erreur'}`);
+      }
+    } catch {
+      showNotification('Impossible de modifier le profil agent.');
+    }
+  };
+
+  const handleDeleteUser = async (username: string) => {
+    try {
+      const res = await fetch(`/api/v1/users/${username}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const json = await res.json();
+      if (res.ok) {
+        setUsersList((prev) => prev.filter((u) => u.username !== username));
+        showNotification(`Agent [${username}] retiré de l'annuaire SCADA.`);
+      } else {
+        showNotification(`Erreur suppression agent : ${json.error || 'Erreur'}`);
+      }
+    } catch {
+      showNotification('Impossible de supprimer le compte agent.');
+    }
+  };
+
   const fetchAnalyticsForZone = useCallback(
     async (zoneName: string, authToken: string) => {
       const headers = { Authorization: `Bearer ${authToken}` };
@@ -285,6 +381,7 @@ export default function App() {
     fetchGridOverview();
     fetchNotificationsState();
     fetchSourceFiles();
+    fetchUsersList('jwt-local-session-dz1807');
     const interval = setInterval(fetchGridOverview, 5000);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -651,7 +748,7 @@ export default function App() {
               Configuration des seuils
             </button>
           )}
-          {isAdmin ? (
+          {isAdmin && (
             <button
               onClick={() => setActiveSection('audit_conformite')}
               className={`hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer ${
@@ -662,18 +759,28 @@ export default function App() {
             >
               Audit & Conformité
             </button>
-          ) : (
-            <button
-              onClick={() => setActiveSection('code_source')}
-              className={`hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer ${
-                activeSection === 'code_source'
-                  ? 'border-sky-400 text-white'
-                  : 'border-transparent text-slate-400'
-              }`}
-            >
-              Architecture
-            </button>
           )}
+          <button
+            onClick={() => setActiveSection('utilisateurs')}
+            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer flex items-center gap-1.5 ${
+              activeSection === 'utilisateurs'
+                ? 'border-sky-400 text-white font-semibold'
+                : 'border-transparent text-slate-400'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5 text-sky-400" />
+            <span>Utilisateurs</span>
+          </button>
+          <button
+            onClick={() => setActiveSection('code_source')}
+            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer ${
+              activeSection === 'code_source'
+                ? 'border-sky-400 text-white'
+                : 'border-transparent text-slate-400'
+            }`}
+          >
+            Architecture
+          </button>
         </nav>
 
         {/* Zone 3 : Sélecteur de Thème ISA-101 (Clair / Sombre #121212 / Auto) + Action primaire */}
@@ -788,6 +895,19 @@ export default function App() {
                 ))}
               </div>
             </div>
+
+            <button
+              onClick={() => setActiveSection('utilisateurs')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
+                activeSection === 'utilisateurs'
+                  ? 'bg-sky-500/20 border-sky-400 text-sky-300 font-semibold'
+                  : 'bg-slate-950 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700'
+              }`}
+              title="Ouvrir la gestion et l'annuaire des utilisateurs"
+            >
+              <Users className="w-3.5 h-3.5 text-sky-400" />
+              <span>Gestion Utilisateurs ({usersList.length})</span>
+            </button>
           </div>
         </div>
       </div>
@@ -894,6 +1014,7 @@ export default function App() {
                     setSelectedNodeId(nodeId);
                   }}
                   wsConnected={true}
+                  energyFilter={energyFilter}
                 />
               </div>
 
@@ -1207,7 +1328,13 @@ export default function App() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <label htmlFor="scada-selected-node-select" className="sr-only">
+                    Sélectionner le nœud SCADA pour analyse IA
+                  </label>
                   <select
+                    id="scada-selected-node-select"
+                    name="selected_node_id"
+                    aria-label="Sélectionner le nœud SCADA pour analyse IA"
                     value={selectedNode?.id || ''}
                     onChange={(e) => setSelectedNodeId(e.target.value)}
                     className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2"
@@ -1454,7 +1581,29 @@ export default function App() {
           />
         )}
 
-        {/* VUE 6 : ARCHITECTURE & CODE SOURCE COMPLET */}
+        {/* VUE 7 : GESTION DES UTILISATEURS & CONTRÔLE D’ACCÈS RBAC (LOI ALGÉRIENNE N° 18-07) */}
+        {activeSection === 'utilisateurs' && (
+          <UserManagementPanel
+            users={usersList}
+            currentUser={currentUser}
+            isAdmin={isAdmin}
+            onSwitchUser={(username, role) => {
+              const found = usersList.find((u) => u.username === username);
+              if (found) {
+                setCurrentUser(found);
+                switchUserRole(role);
+                showNotification(
+                  `Poste assigné à l’agent ${found.fullName} (${found.role.toUpperCase()} · Matricule ${found.badgeNumber})`
+                );
+              }
+            }}
+            onCreateUser={handleCreateUser}
+            onUpdateUser={handleUpdateUser}
+            onDeleteUser={handleDeleteUser}
+          />
+        )}
+
+        {/* VUE 8 : ARCHITECTURE & CODE SOURCE COMPLET */}
         {activeSection === 'code_source' && (
           <SourceCodeExplorer files={sourceFiles} />
         )}

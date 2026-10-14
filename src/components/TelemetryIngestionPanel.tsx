@@ -37,7 +37,13 @@ export const TelemetryIngestionPanel: React.FC<TelemetryIngestionPanelProps> = (
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          <label htmlFor="ingestion-node-select" className="sr-only">
+            Sélectionner le nœud capteur pour ingestion
+          </label>
           <select
+            id="ingestion-node-select"
+            name="ingestion_node_id"
+            aria-label="Sélectionner le nœud capteur pour ingestion"
             value={selectedNode?.id || ''}
             onChange={(e) => onSelectNode(e.target.value)}
             className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-sky-500"

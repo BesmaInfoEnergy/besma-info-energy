@@ -22,19 +22,19 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
     {
       key: 'light',
       label: 'Clair',
-      title: 'Mode Bleu Nuit Standard (#0F172A)',
+      title: 'Mode Clair (Visibilité Jour & Bureau SCADA · Fond #F1F5F9 / Cartes #FFFFFF)',
       icon: <Sun className="w-3.5 h-3.5" />,
     },
     {
       key: 'dark',
       label: 'Sombre',
-      title: 'Mode Sombre Pur ISA-101 (#121212 · Texte #E0E0E0)',
+      title: 'Mode Sombre Pur ISA-101 (Salle de Contrôle 24/7 · Fond #121212 / Cartes #1C1C1E)',
       icon: <Moon className="w-3.5 h-3.5" />,
     },
     {
       key: 'auto',
       label: 'Auto',
-      title: 'Suit automatiquement prefers-color-scheme du système',
+      title: 'Mode Automatique (Suit la préférence système OS)',
       icon: <Monitor className="w-3.5 h-3.5" />,
     },
   ];

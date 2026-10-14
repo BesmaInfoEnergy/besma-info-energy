@@ -158,11 +158,13 @@ export const InterventionScheduler: React.FC<InterventionSchedulerProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">
+              <label htmlFor="sched-datetime-input" className="block text-slate-300 font-medium mb-1">
                 Date &amp; Heure planifiées (UTC)
               </label>
               <div className="relative">
                 <input
+                  id="sched-datetime-input"
+                  name="scheduled_at"
                   type="datetime-local"
                   required
                   value={scheduledAt}
@@ -173,10 +175,12 @@ export const InterventionScheduler: React.FC<InterventionSchedulerProps> = ({
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">
+              <label htmlFor="sched-priority-select" className="block text-slate-300 font-medium mb-1">
                 Niveau de Priorité
               </label>
               <select
+                id="sched-priority-select"
+                name="priority_level"
                 value={priority}
                 onChange={(e) =>
                   setPriority(
@@ -194,10 +198,12 @@ export const InterventionScheduler: React.FC<InterventionSchedulerProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">
+            <label htmlFor="sched-notes-textarea" className="block text-slate-300 font-medium mb-1">
               Consignes techniques &amp; Notes d’intervention
             </label>
             <textarea
+              id="sched-notes-textarea"
+              name="technical_notes"
               rows={3}
               required
               value={notes}

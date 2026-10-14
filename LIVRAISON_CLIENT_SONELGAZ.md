@@ -159,9 +159,8 @@ sudo ufw enable
 
 ---
 
-## 5. Procédure d'Installation Clé en Main en 1 Commande
-
-Lors de la livraison sur le serveur du client, exécutez simplement :
+### 5.1 Déploiement Production Serveur Souverain (Linux / Docker)
+Lors du déploiement définitif sur le serveur souverain Linux (Ubuntu / RHEL), exécutez simplement :
 
 ```bash
 chmod +x install_production.sh
@@ -176,7 +175,17 @@ Ce script effectue automatiquement :
 5. La création du script de sauvegarde quotidienne MongoDB (`./backups/run_daily_backup.sh`).
 6. La compilation et le lancement des 4 conteneurs de production via `docker-compose.prod.yml`.
 
-### 5.2 Scripts d'Exploitation, de Simulation Terrain et de Recette (`scripts/`)
+### 5.2 Test et Recette Rapide sous Windows (Poste de Travail / VS Code)
+Pour tester immédiatement l'interface et l'agent sur un poste de travail Windows 10/11 sans Docker :
+
+- **Option A (Double-clic rapide)** : Double-cliquez sur **`start_windows.bat`**. Le script prépare l'environnement et ouvre automatiquement `http://localhost:3000`.
+- **Option B (Terminal VS Code / PowerShell)** :
+  ```powershell
+  npm run dev
+  ```
+  Puis ouvrez votre navigateur à l'adresse **`http://localhost:3000`**.
+
+### 5.3 Scripts d'Exploitation, de Simulation Terrain et de Recette (`scripts/`)
 Trois utilitaires prêts à l'emploi sont fournis dans le dossier `scripts/` pour faciliter vos démonstrations devant le client et le maintien en condition opérationnelle (MCO) :
 
 1. **Diagnostic de Santé & Conformité (`scripts/healthcheck_production.sh`)** :

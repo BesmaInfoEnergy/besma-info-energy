@@ -89,7 +89,11 @@ echo -e "${GREEN}✓ Script de sauvegarde créé dans ./backups/run_daily_backup
 
 # 6. Construction et démarrage des conteneurs Docker de production
 echo -e "\n${YELLOW}[6/6] Construction et lancement des conteneurs Docker de production...${NC}"
-docker compose -f docker-compose.prod.yml up -d --build
+if docker compose version &> /dev/null; then
+  docker compose -f docker-compose.prod.yml up -d --build
+else
+  docker-compose -f docker-compose.prod.yml up -d --build
+fi
 
 echo -e "\n${BLUE}================================================================================${NC}"
 echo -e "${GREEN}✓ DÉPLOIEMENT TERMINÉ AVEC SUCCÈS !${NC}"

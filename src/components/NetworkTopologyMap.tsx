@@ -63,6 +63,7 @@ interface NetworkTopologyMapProps {
   selectedZone: string;
   onSelectZone: (zoneName: string, nodeId: string) => void;
   wsConnected?: boolean;
+  energyFilter?: 'ALL' | 'ELECTRICITY' | 'GAS';
 }
 
 export const NetworkTopologyMap: React.FC<NetworkTopologyMapProps> = ({
@@ -70,6 +71,7 @@ export const NetworkTopologyMap: React.FC<NetworkTopologyMapProps> = ({
   selectedZone,
   onSelectZone,
   wsConnected = true,
+  energyFilter = 'ALL',
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [statusFilter, setStatusFilter] = useState<'ALL' | SeverityStatus>('ALL');
@@ -161,9 +163,9 @@ export const NetworkTopologyMap: React.FC<NetworkTopologyMapProps> = ({
       .append('path')
       .datum(algeriaCoastAndSaharaPolygon)
       .attr('d', lineGenerator)
-      .attr('fill', isPureDark ? '#18181B' : '#0F172A')
-      .attr('fill-opacity', 0.85)
-      .attr('stroke', isPureDark ? '#3F3F46' : '#334155')
+      .attr('fill', isPureDark ? '#18181B' : '#E2E8F0')
+      .attr('fill-opacity', isPureDark ? 0.85 : 0.65)
+      .attr('stroke', isPureDark ? '#3F3F46' : '#94A3B8')
       .attr('stroke-width', 1.5);
 
     // Dictionnaire rapide de coordonnées projetées par zone
@@ -183,8 +185,15 @@ export const NetworkTopologyMap: React.FC<NetworkTopologyMapProps> = ({
       const dst = coordsByZone[lnk.target];
       if (!src || !dst) return;
 
+      const isEnergyMatch =
+        energyFilter === 'ALL' ||
+        (energyFilter === 'ELECTRICITY' && lnk.kind === 'ELECTRICITY') ||
+        (energyFilter === 'GAS' && lnk.kind === 'GAS');
+
       const isHighlighted =
         selectedZone === lnk.source || selectedZone === lnk.target;
+
+      const baseOpacity = isEnergyMatch ? (isHighlighted ? 0.95 : 0.6) : 0.12;
 
       linksGroup
         .append('line')
@@ -192,9 +201,9 @@ export const NetworkTopologyMap: React.FC<NetworkTopologyMapProps> = ({
         .attr('y1', src.y)
         .attr('x2', dst.x)
         .attr('y2', dst.y)
-        .attr('stroke', lnk.kind === 'ELECTRICITY' ? '#38BDF8' : '#F59E0B')
-        .attr('stroke-opacity', isHighlighted ? 0.9 : 0.42)
-        .attr('stroke-width', isHighlighted ? 2.8 : 1.8)
+        .attr('stroke', lnk.kind === 'ELECTRICITY' ? '#0284C7' : '#D97706')
+        .attr('stroke-opacity', baseOpacity)
+        .attr('stroke-width', isHighlighted ? 3.2 : isEnergyMatch ? 2.2 : 1)
         .attr('stroke-dasharray', lnk.kind === 'GAS' ? '7,4' : 'none');
     });
 
@@ -287,7 +296,7 @@ export const NetworkTopologyMap: React.FC<NetworkTopologyMapProps> = ({
       g.append('text')
         .attr('y', labelOffsetY)
         .attr('text-anchor', 'middle')
-        .attr('fill', isSelected ? '#FFFFFF' : '#E2E8F0')
+        .attr('fill', isPureDark ? (isSelected ? '#FFFFFF' : '#E2E8F0') : (isSelected ? '#0F172A' : '#1E293B'))
         .attr('font-size', isSelected ? '12px' : '11px')
         .attr('font-weight', isSelected ? '700' : '600')
         .attr('font-family', 'Plus Jakarta Sans, sans-serif')
@@ -306,7 +315,7 @@ export const NetworkTopologyMap: React.FC<NetworkTopologyMapProps> = ({
             : `${zoneObj.voltage_kv} kV · ${zoneObj.transformer_temp_c}°C`
         );
     });
-  }, [zonesArray, selectedZone, statusFilter, onSelectZone]);
+  }, [zonesArray, selectedZone, statusFilter, onSelectZone, isPureDark, chartTokens, energyFilter]);
 
   const activeZoneDetail =
     hoveredZone || zonesStatus[selectedZone] || zonesArray[0];

@@ -1,21 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0F172A" />
+    
     <title>BesmaInfoEnergy — Supervision & Optimisation Réseau</title>
     <meta name="description" content="Agent IA autonome de supervision, prédiction de pannes, détection de pertes non techniques et régulation SCADA pour les réseaux nationaux d'électricité et de gaz (Conforme Loi 18-07)." />
+    
+    <!-- Open Graph -->
     <meta property="og:title" content="BesmaInfoEnergy — Supervision & Optimisation Réseau" />
     <meta property="og:description" content="Agent IA autonome de supervision, prédiction de pannes, détection de pertes non techniques et régulation SCADA pour les réseaux nationaux d'électricité et de gaz (Conforme Loi 18-07)." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Favicon - évite le 204 que tu as mis en Express -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0F172A; color: #F8FAFC; font-family: 'Plus Jakarta Sans', sans-serif; text-align: center; padding: 24px;">
+        <div style="width: 56px; height: 56px; border: 4px solid #1E293B; border-top: 4px solid #10B981; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
+        <h1 style="font-size: 20px; font-weight: 700; margin: 0 0 8px 0; letter-spacing: -0.02em;">BesmaInfoEnergy — SONELGAZ</h1>
+        <p style="font-size: 14px; color: #94A3B8; margin: 0 0 16px 0;">Chargement de l'agent de supervision énergétique SCADA...</p>
+        <span style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #10B981; background: #064E3B; padding: 4px 10px; border-radius: 9999px;">Réseau Électricité & Gaz · Loi 18-07</span>
+      </div>
+    </div>
+    <noscript>
+      <div style="padding: 24px; text-align: center; color: white; background: #0F172A;">Veuillez activer JavaScript pour utiliser BesmaInfoEnergy SCADA.</div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

@@ -724,14 +724,17 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
         {/* Boîte d'import CSV optionnelle */}
         {showImportBox && (
           <div className="bg-slate-950 border border-slate-800 rounded-lg p-4 space-y-3">
-            <div className="text-xs font-medium text-slate-200">
+            <label htmlFor="threshold-csv-import-textarea" className="block text-xs font-medium text-slate-200">
               Collez le contenu CSV à importer (colonnes :{' '}
               <code className="text-sky-400">
                 zone,season,metric,warning_threshold,critical_threshold,emergency_threshold,direction,unit,enabled
               </code>
               ) :
-            </div>
+            </label>
             <textarea
+              id="threshold-csv-import-textarea"
+              name="csv_import_text"
+              aria-label="Contenu CSV de configuration des seuils"
               rows={4}
               value={csvImportText}
               onChange={(e) => setCsvImportText(e.target.value)}
@@ -758,9 +761,9 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
         {/* Sélecteurs de Zone (8 Wilayas/Pôles) et de Saison */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-slate-400">
+            <span className="block text-xs font-medium text-slate-400">
               Zone du Réseau National (8 Pôles Énergétiques)
-            </label>
+            </span>
             <div className="flex flex-wrap gap-1.5">
               {ALGERIA_ZONES.map((zone) => (
                 <button
@@ -783,9 +786,9 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-slate-400">
+            <span className="block text-xs font-medium text-slate-400">
               Profil Saisonnier
-            </label>
+            </span>
             <div className="flex items-center gap-1 p-1 bg-slate-950 border border-slate-800 rounded-lg">
               {(
                 [
@@ -861,19 +864,27 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
 
                     <td className="py-3 px-4 font-mono">
                       {isEditing ? (
-                        <select
-                          value={draftValues.direction}
-                          onChange={(e) =>
-                            setDraftValues({
-                              ...draftValues,
-                              direction: e.target.value as 'above' | 'below',
-                            })
-                          }
-                          className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200"
-                        >
-                          <option value="above">above (&gt; max)</option>
-                          <option value="below">below (&lt; min)</option>
-                        </select>
+                        <div>
+                          <label htmlFor={`thresh-dir-${item.id}`} className="sr-only">
+                            Direction du seuil {item.metric}
+                          </label>
+                          <select
+                            id={`thresh-dir-${item.id}`}
+                            name={`threshold_direction_${item.id}`}
+                            aria-label={`Direction du seuil ${item.metric}`}
+                            value={draftValues.direction}
+                            onChange={(e) =>
+                              setDraftValues({
+                                ...draftValues,
+                                direction: e.target.value as 'above' | 'below',
+                              })
+                            }
+                            className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200"
+                          >
+                            <option value="above">above (&gt; max)</option>
+                            <option value="below">below (&lt; min)</option>
+                          </select>
+                        </div>
                       ) : (
                         <span className="text-slate-300">
                           {item.direction === 'above' ? 'above (≥)' : 'below (≤)'}
@@ -883,18 +894,26 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
 
                     <td className="py-3 px-4 font-mono text-right tabular-nums">
                       {isEditing ? (
-                        <input
-                          type="number"
-                          step="0.05"
-                          value={draftValues.warning_threshold}
-                          onChange={(e) =>
-                            setDraftValues({
-                              ...draftValues,
-                              warning_threshold: parseFloat(e.target.value),
-                            })
-                          }
-                          className="w-24 bg-slate-950 border border-amber-500/50 rounded px-2 py-1 text-right text-amber-300 font-mono"
-                        />
+                        <div>
+                          <label htmlFor={`thresh-warn-${item.id}`} className="sr-only">
+                            Seuil Warning {item.metric}
+                          </label>
+                          <input
+                            id={`thresh-warn-${item.id}`}
+                            name={`threshold_warning_${item.id}`}
+                            aria-label={`Seuil Warning ${item.metric}`}
+                            type="number"
+                            step="0.05"
+                            value={draftValues.warning_threshold}
+                            onChange={(e) =>
+                              setDraftValues({
+                                ...draftValues,
+                                warning_threshold: parseFloat(e.target.value),
+                              })
+                            }
+                            className="w-24 bg-slate-950 border border-amber-500/50 rounded px-2 py-1 text-right text-amber-300 font-mono"
+                          />
+                        </div>
                       ) : (
                         <span className="text-amber-300 font-semibold">
                           {item.warning_threshold}
@@ -904,18 +923,26 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
 
                     <td className="py-3 px-4 font-mono text-right tabular-nums">
                       {isEditing ? (
-                        <input
-                          type="number"
-                          step="0.05"
-                          value={draftValues.critical_threshold}
-                          onChange={(e) =>
-                            setDraftValues({
-                              ...draftValues,
-                              critical_threshold: parseFloat(e.target.value),
-                            })
-                          }
-                          className="w-24 bg-slate-950 border border-orange-500/50 rounded px-2 py-1 text-right text-orange-400 font-mono"
-                        />
+                        <div>
+                          <label htmlFor={`thresh-crit-${item.id}`} className="sr-only">
+                            Seuil Critical {item.metric}
+                          </label>
+                          <input
+                            id={`thresh-crit-${item.id}`}
+                            name={`threshold_critical_${item.id}`}
+                            aria-label={`Seuil Critical ${item.metric}`}
+                            type="number"
+                            step="0.05"
+                            value={draftValues.critical_threshold}
+                            onChange={(e) =>
+                              setDraftValues({
+                                ...draftValues,
+                                critical_threshold: parseFloat(e.target.value),
+                              })
+                            }
+                            className="w-24 bg-slate-950 border border-orange-500/50 rounded px-2 py-1 text-right text-orange-400 font-mono"
+                          />
+                        </div>
                       ) : (
                         <span className="text-orange-400 font-semibold">
                           {item.critical_threshold}
@@ -925,18 +952,26 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
 
                     <td className="py-3 px-4 font-mono text-right tabular-nums">
                       {isEditing ? (
-                        <input
-                          type="number"
-                          step="0.05"
-                          value={draftValues.emergency_threshold}
-                          onChange={(e) =>
-                            setDraftValues({
-                              ...draftValues,
-                              emergency_threshold: parseFloat(e.target.value),
-                            })
-                          }
-                          className="w-24 bg-slate-950 border border-red-500/50 rounded px-2 py-1 text-right text-red-400 font-mono"
-                        />
+                        <div>
+                          <label htmlFor={`thresh-emerg-${item.id}`} className="sr-only">
+                            Seuil Emergency {item.metric}
+                          </label>
+                          <input
+                            id={`thresh-emerg-${item.id}`}
+                            name={`threshold_emergency_${item.id}`}
+                            aria-label={`Seuil Emergency ${item.metric}`}
+                            type="number"
+                            step="0.05"
+                            value={draftValues.emergency_threshold}
+                            onChange={(e) =>
+                              setDraftValues({
+                                ...draftValues,
+                                emergency_threshold: parseFloat(e.target.value),
+                              })
+                            }
+                            className="w-24 bg-slate-950 border border-red-500/50 rounded px-2 py-1 text-right text-red-400 font-mono"
+                          />
+                        </div>
                       ) : (
                         <span className="text-red-400 font-semibold">
                           {item.emergency_threshold}
@@ -1020,8 +1055,12 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div>
-              <label className="block text-slate-400 mb-1">Métrique à tester</label>
+              <label htmlFor="threshold-sim-metric-select" className="block text-slate-400 mb-1">
+                Métrique à tester
+              </label>
               <select
+                id="threshold-sim-metric-select"
+                name="sim_metric"
                 value={simMetric}
                 onChange={(e) => {
                   const m = e.target.value as ThresholdMetricKey;
@@ -1039,9 +1078,13 @@ export const ThresholdConfigPanel: React.FC<ThresholdConfigPanelProps> = ({
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1">Valeur simulée</label>
+              <label htmlFor="threshold-sim-value-input" className="block text-slate-400 mb-1">
+                Valeur simulée
+              </label>
               <div className="flex items-center gap-2">
                 <input
+                  id="threshold-sim-value-input"
+                  name="sim_value"
                   type="number"
                   step="0.1"
                   value={simValue}

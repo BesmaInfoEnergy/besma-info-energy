@@ -1,11 +1,26 @@
 @echo off
 REM ==============================================================================
-REM BESMAINFOENERGY — LANCEUR RAPIDE WINDOWS (DOUBLE-CLIC OU TERMINAL VS CODE)
+REM BESMAINFOENERGY - LANCEUR RAPIDE WINDOWS (SONELGAZ)
 REM ==============================================================================
-chcp 65001 >nul
+title BesmaInfoEnergy - Plateforme de Supervision Energetique
+cls
 echo ================================================================================
-echo    BESMAINFOENERGY — LANCEMENT LOCAL SOUS WINDOWS (VS CODE)
+echo    BESMAINFOENERGY - DEMARRAGE DE L'AGENT ENERGETIQUE SOUS WINDOWS
 echo ================================================================================
+echo.
+cd /d "%~dp0"
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0install_windows.ps1"
-pause
+where node >nul 2>nul
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERREUR] Node.js n'a pas ete detecte sur cette machine Windows.
+    echo Veuillez installer Node.js depuis https://nodejs.org/ (version LTS).
+    echo.
+    pause
+    exit /b 1
+)
+
+echo [INFO] Verification de l'environnement et lancement de BesmaInfoEnergy...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0install_windows.ps1" %*
+
+echo.
+echo [INFO] Session BesmaInfoEnergy terminee.

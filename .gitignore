@@ -12,6 +12,13 @@ firebase-service-account.json
 backend/firebase-service-account.json
 keys/
 ./keys/
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+
 *.pem
 *.json
 !package.json

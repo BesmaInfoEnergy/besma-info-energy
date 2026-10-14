@@ -184,7 +184,7 @@ export function test_theme_toggle_persists_choice(): boolean {
 }
 
 export function test_dark_mode_contrast_meets_wcag(): boolean {
-  if (ISA_101_DARK_PALETTE.background === '#000000') {
+  if ((ISA_101_DARK_PALETTE.background as string) === '#000000') {
     throw new Error('Interdiction du noir pur (#000000) selon la norme ISA-101 (#121212 requis).');
   }
   if (ISA_101_DARK_PALETTE.background !== '#121212') {

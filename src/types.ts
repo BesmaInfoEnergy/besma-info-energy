@@ -7,6 +7,11 @@ export interface UserAccount {
   role: Role;
   wilayaScope: string;
   department: string;
+  badgeNumber?: string;
+  electricalClearance?: string;
+  status?: 'ACTIVE' | 'ON_DUTY' | 'SUSPENDED';
+  phoneEncrypted?: string;
+  lastLoginAt?: string;
 }
 
 export interface GridNode {

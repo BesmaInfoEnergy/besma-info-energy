@@ -134,15 +134,15 @@ export function getChartThemeTokens(resolvedMode: ResolvedThemeMode) {
   }
   return {
     mode: 'light' as const,
-    backgroundColor: '#0F172A',
-    cardBackground: '#020617',
-    gridStroke: '#1E293B',
-    axisStroke: '#CBD5E1',
-    tickFill: '#CBD5E1',
-    emergencyColor: '#FF3B30',
-    criticalColor: '#FF9500',
-    warningColor: '#FFCC00',
-    contrastRatio: computeWcagContrastRatio('#F8FAFC', '#0F172A'),
+    backgroundColor: '#F8FAFC',
+    cardBackground: '#FFFFFF',
+    gridStroke: '#E2E8F0',
+    axisStroke: '#475569',
+    tickFill: '#334155',
+    emergencyColor: '#DC2626',
+    criticalColor: '#EA580C',
+    warningColor: '#D97706',
+    contrastRatio: computeWcagContrastRatio('#0F172A', '#F8FAFC'),
   };
 }
 

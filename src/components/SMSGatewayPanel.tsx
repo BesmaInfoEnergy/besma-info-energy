@@ -317,7 +317,12 @@ export const SMSGatewayPanel: React.FC<SMSGatewayPanelProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <label htmlFor="sms-provider-select" className="sr-only">
+            Passerelle opérateur télécom
+          </label>
           <select
+            id="sms-provider-select"
+            name="sms_provider_preview"
             value={selectedProviderPreview}
             onChange={(e) => setSelectedProviderPreview(e.target.value as SMSProviderName)}
             className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono"
@@ -395,7 +400,13 @@ export const SMSGatewayPanel: React.FC<SMSGatewayPanelProps> = ({
             Simuler Escalade Manuelle (60s expiré)
           </span>
           <div className="flex items-center gap-1.5">
+            <label htmlFor="sms-escalation-reason-select" className="sr-only">
+              Motif d’escalade manuelle SMS
+            </label>
             <select
+              id="sms-escalation-reason-select"
+              name="escalation_reason"
+              aria-label="Motif d’escalade manuelle SMS"
               value={escalationReason}
               onChange={(e) =>
                 setEscalationReason(
@@ -430,7 +441,13 @@ export const SMSGatewayPanel: React.FC<SMSGatewayPanelProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <label htmlFor="sms-zone-filter-select" className="sr-only">
+            Filtrer l'historique par zone
+          </label>
           <select
+            id="sms-zone-filter-select"
+            name="sms_zone_filter"
+            aria-label="Filtrer l'historique par zone"
             value={zoneFilter}
             onChange={(e) => {
               setZoneFilter(e.target.value);
@@ -446,7 +463,13 @@ export const SMSGatewayPanel: React.FC<SMSGatewayPanelProps> = ({
             <option value="Hassi R'Mel">Hassi R'Mel</option>
           </select>
 
+          <label htmlFor="sms-operator-filter-input" className="sr-only">
+            Filtrer par pseudonyme opérateur
+          </label>
           <input
+            id="sms-operator-filter-input"
+            name="sms_operator_filter"
+            aria-label="Filtrer par pseudonyme opérateur"
             type="text"
             placeholder="Pseudonyme opérateur (OP-DZ1807...)"
             value={operatorFilter}
@@ -457,7 +480,13 @@ export const SMSGatewayPanel: React.FC<SMSGatewayPanelProps> = ({
             className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-slate-200 font-mono"
           />
 
+          <label htmlFor="sms-status-filter-select" className="sr-only">
+            Filtrer par statut d'envoi SMS
+          </label>
           <select
+            id="sms-status-filter-select"
+            name="sms_status_filter"
+            aria-label="Filtrer par statut d'envoi SMS"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value as 'ALL' | 'sent' | 'failed');
@@ -470,7 +499,13 @@ export const SMSGatewayPanel: React.FC<SMSGatewayPanelProps> = ({
             <option value="failed">Échec (failed)</option>
           </select>
 
+          <label htmlFor="sms-type-filter-select" className="sr-only">
+            Filtrer par type d'alerte SMS
+          </label>
           <select
+            id="sms-type-filter-select"
+            name="sms_type_filter"
+            aria-label="Filtrer par type d'alerte SMS"
             value={typeFilter}
             onChange={(e) => {
               setTypeFilter(e.target.value);

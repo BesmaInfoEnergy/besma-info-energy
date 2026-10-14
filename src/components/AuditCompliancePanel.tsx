@@ -172,10 +172,12 @@ export const AuditCompliancePanel: React.FC<AuditCompliancePanelProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">
+            <label htmlFor="audit-date-from" className="block text-xs text-slate-400 mb-1.5">
               Date de début (UTC)
             </label>
             <input
+              id="audit-date-from"
+              name="audit_date_from"
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
@@ -184,10 +186,12 @@ export const AuditCompliancePanel: React.FC<AuditCompliancePanelProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">
+            <label htmlFor="audit-date-to" className="block text-xs text-slate-400 mb-1.5">
               Date de fin (UTC)
             </label>
             <input
+              id="audit-date-to"
+              name="audit_date_to"
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
@@ -196,10 +200,12 @@ export const AuditCompliancePanel: React.FC<AuditCompliancePanelProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">
+            <label htmlFor="audit-operator-filter" className="block text-xs text-slate-400 mb-1.5">
               Filtre Opérateur
             </label>
             <select
+              id="audit-operator-filter"
+              name="audit_operator_id"
               value={operatorId}
               onChange={(e) => setOperatorId(e.target.value)}
               className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500"
@@ -211,10 +217,12 @@ export const AuditCompliancePanel: React.FC<AuditCompliancePanelProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">
+            <label htmlFor="audit-action-type" className="block text-xs text-slate-400 mb-1.5">
               Type d’Action
             </label>
             <select
+              id="audit-action-type"
+              name="audit_action_type"
               value={actionType}
               onChange={(e) => setActionType(e.target.value)}
               className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500"
@@ -227,9 +235,9 @@ export const AuditCompliancePanel: React.FC<AuditCompliancePanelProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">
+            <span className="block text-xs text-slate-400 mb-1.5">
               Format du Document
-            </label>
+            </span>
             <div className="flex items-center gap-1 p-1 bg-slate-950 border border-slate-700 rounded-lg">
               <button
                 type="button"
